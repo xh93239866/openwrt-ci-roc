@@ -21,9 +21,9 @@ jobs:
       - name: 放入自定义脚本与配置
         run: |
           cd openwrt
-          cp -f ../Roc-script.sh ./
+          cp -f ..scripts/Roc-script.sh ./
           cp -f ..configs/General.config ./
-          cp -f ../IPQ60XX.config ./
+          cp -f ..configs/IPQ60XX.config ./
           chmod +x Roc-script.sh
           ./Roc-script.sh
 
