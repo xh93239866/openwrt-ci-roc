@@ -22,7 +22,7 @@ jobs:
         run: |
           cd openwrt
           cp -f ../Roc-script.sh ./
-          cp -f ../General.config ./
+          cp -f ..configs/General.config ./
           cp -f ../IPQ60XX.config ./
           chmod +x Roc-script.sh
           ./Roc-script.sh
