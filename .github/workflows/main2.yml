@@ -1,0 +1,51 @@
+name: OpenWrt 雅典娜 RE-CS-02 编译
+on:
+  workflow_dispatch: # 手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 检出仓库文件
+        uses: actions/checkout@v4
+
+      - name: 安装编译依赖
+        run: |
+          sudo apt update -y
+          sudo apt install -y build-essential cmake flex git libssl-dev libncurses5-dev unzip zlib1g-dev subversion gcc-multilib g++-multilib
+
+      - name: 拉取 OpenWrt 源码
+        run: |
+          git clone --depth=1 https://github.com/laipeng668/openwrt-6.x openwrt
+
+      - name: 放入自定义脚本与配置
+        run: |
+          cd openwrt
+          cp -f ../Roc-script.sh ./
+          cp -f ../General.config ./
+          cp -f ../IPQ60XX.config ./
+          chmod +x Roc-script.sh
+          ./Roc-script.sh
+
+      - name: 生成编译配置
+        run: |
+          cd openwrt
+          cat General.config >> .config
+          cat IPQ60XX.config >> .config
+          make defconfig
+
+      - name: 下载依赖包
+        run: |
+          cd openwrt
+          make download -j$(nproc)
+
+      - name: 开始编译固件
+        run: |
+          cd openwrt
+          make -j$(nproc) || make -j1 V=s
+
+      - name: 上传固件成品
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenWrt-RE-CS-02
+          path: openwrt/bin/targets/qualcommax/ipq60xx/*
